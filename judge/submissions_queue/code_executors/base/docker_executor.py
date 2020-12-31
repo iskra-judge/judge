@@ -1,6 +1,5 @@
 import tarfile
 import tempfile
-import uuid
 from abc import abstractmethod
 from os import chdir, remove
 from os.path import basename, join, dirname
@@ -8,7 +7,7 @@ from os.path import basename, join, dirname
 import docker
 import shutil
 
-from judge.submissions_queue.code_executors.base_executor import BaseExecutor
+from judge.submissions_queue.code_executors.base.base_executor import BaseExecutor
 from judge.submissions_queue.common.test_results import TestResult, TestResultType
 
 
@@ -83,17 +82,3 @@ class DockerExecutor(BaseExecutor):
     @abstractmethod
     def build_command(self):
         pass
-
-
-class PythonDockerExecutor(DockerExecutor):
-    code_file_path = f'/tmp/code_file-{uuid.uuid4()}.py'
-    image_name = 'python:slim'
-
-    def apply_template(self, code):
-        return f'''import sys
-fd = open('{self.test_file_path}')
-sys.stdin = fd
-{code}'''
-
-    def build_command(self):
-        return f'python {self.code_file_path}'

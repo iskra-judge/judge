@@ -1,5 +1,5 @@
-from judge.submissions_queue.code_executors.docker_executor import PythonDockerExecutor
 from judge.submissions_queue.common.submissions_common import get_tests
+from judge.submissions_queue.code_executors.python_docker_executor import PythonDockerExecutor
 
 
 def solve():

@@ -1,6 +1,6 @@
 import subprocess
 
-from judge.submissions_queue.code_executors.base_executor import BaseExecutor
+from judge.submissions_queue.code_executors.base.base_executor import BaseExecutor
 from judge.submissions_queue.common.test_results import TestResult, TestResultType
 
 

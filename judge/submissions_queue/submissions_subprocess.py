@@ -1,4 +1,4 @@
-from judge.submissions_queue.code_executors.subprocess_executor import SubprocessExecutor
+from judge.submissions_queue.code_executors.base.subprocess_executor import SubprocessExecutor
 from judge.submissions_queue.common.submissions_common import get_tests
 
 

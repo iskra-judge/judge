@@ -1,6 +1,7 @@
 import tarfile
 import tempfile
 import uuid
+from abc import abstractmethod
 from os import chdir, remove
 from os.path import basename, join, dirname
 
@@ -12,13 +13,14 @@ from judge.submissions_queue.common.test_results import TestResult, TestResultTy
 
 
 class DockerExecutor(BaseExecutor):
-    code_file_path = f'/tmp/code_file-{uuid.uuid4()}.py'
+    code_file_path = None
     test_file_path = f'/tmp/test.txt'
+    image_name = None
 
     def __init__(self):
         self.client = docker.from_env()
         self.container = self.client.containers.create(
-            'python:slim',
+            image=self.image_name,
             command='sh -c "tail -f /dev/null"')
 
     def copy_to(self, source, destination):
@@ -41,14 +43,6 @@ class DockerExecutor(BaseExecutor):
         remove(tar_path)
         remove(local_dest_name)
 
-    def apply_template(self, code):
-        return f'''
-import sys
-fd = open('{self.test_file_path}')
-sys.stdin = fd
-{code}
-'''
-
     def before_execute(self, code_path, *args, **kwargs):
         self.container.start()
         self.copy_to(code_path, self.code_file_path)
@@ -67,7 +61,7 @@ sys.stdin = fd
 
     def execute_test(self, code_path, test_input):
         self.prepare_test_input(test_input)
-        cmd = f'python {self.code_file_path}'
+        cmd = self.build_command()
         return self.container.exec_run(cmd)
 
     def build_test_result(self, execution_result, expected_output):
@@ -85,3 +79,21 @@ sys.stdin = fd
             else TestResultType.WrongAnswer,
             execution_result.output.decode().strip()
         )
+
+    @abstractmethod
+    def build_command(self):
+        pass
+
+
+class PythonDockerExecutor(DockerExecutor):
+    code_file_path = f'/tmp/code_file-{uuid.uuid4()}.py'
+    image_name = 'python:slim'
+
+    def apply_template(self, code):
+        return f'''import sys
+fd = open('{self.test_file_path}')
+sys.stdin = fd
+{code}'''
+
+    def build_command(self):
+        return f'python {self.code_file_path}'

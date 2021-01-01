@@ -1,4 +1,5 @@
 from judge.submissions_queue.code_executors.cpp_docker_executor import CppDockerExecutor
+from judge.submissions_queue.code_executors.java_docker_executor import JavaDockerExecutor
 from judge.submissions_queue.common.submissions_common import get_tests
 from judge.submissions_queue.code_executors.python_docker_executor import PythonDockerExecutor
 
@@ -10,8 +11,9 @@ def solve():
 
     # Windows
     executors = [
-        ('PY', PythonDockerExecutor(), 'E:\\repos\\personal\\tasks\\sum\\sample_task.py'),
-        ('CPP', CppDockerExecutor(), 'E:\\repos\\personal\\tasks\\sum\\sample_task.cpp'),
+        # ('PY', PythonDockerExecutor(), 'E:\\repos\\personal\\tasks\\sum\\sample_task.py'),
+        # ('CPP', CppDockerExecutor(), 'E:\\repos\\personal\\tasks\\sum\\sample_task.cpp'),
+        ('Java', JavaDockerExecutor(), 'E:\\repos\\personal\\tasks\\sum\\sample_task.java'),
     ]
     # Linux
     # executors = [

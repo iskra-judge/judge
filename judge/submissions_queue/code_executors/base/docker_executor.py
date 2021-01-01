@@ -46,6 +46,7 @@ class DockerExecutor(BaseExecutor):
         )
 
     def before_execute(self, code_path, *args, **kwargs):
+        self.preprocess_code(code_path)
         self.container.start()
         copy_to_container(self.container, code_path, self.code_file_path)
         return super().before_test_execute(code_path, *args, **kwargs)
@@ -129,4 +130,7 @@ print(stdout.strip())
 
     @abstractmethod
     def get_run_command_params(self):
+        pass
+
+    def preprocess_code(self, code_path):
         pass

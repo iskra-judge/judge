@@ -60,8 +60,21 @@ class DockerExecutor(BaseExecutor):
 
     def execute_test(self, code_path, test_input):
         self.prepare_test_input(test_input)
-        cmd = self.build_command()
-        return self.container.exec_run(cmd)
+        commands = [
+            self.get_compile_command(),
+            self.get_run_command(test_input),
+        ]
+        command_results = []
+        for command in commands:
+            if command:
+                command_result = self.container.exec_run(command)
+                command_results.append(command_result)
+                if command_result.exit_code:
+                    return command_result
+
+        return command_results[-1] \
+            if command_results \
+            else None
 
     def build_test_result(self, execution_result, expected_output):
         if execution_result.exit_code:
@@ -80,5 +93,9 @@ class DockerExecutor(BaseExecutor):
         )
 
     @abstractmethod
-    def build_command(self):
+    def get_compile_command(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def get_run_command(self, *args, **kwargs):
         pass

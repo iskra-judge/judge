@@ -13,5 +13,8 @@ fd = open('{self.test_file_path}')
 sys.stdin = fd
 {code}'''
 
-    def build_command(self):
+    def get_run_command(self):
         return f'python {self.code_file_path}'
+
+    def get_compile_command(self):
+        return None

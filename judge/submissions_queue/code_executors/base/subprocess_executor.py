@@ -16,8 +16,6 @@ class SubprocessExecutor(BaseExecutor):
         )
 
         stdout = process.communicate(input=input.encode())[0]
-        process.kill()
-        process.terminate()
         if process.returncode:
             raise RuntimeError(stdout.strip())
         print(stdout.strip())

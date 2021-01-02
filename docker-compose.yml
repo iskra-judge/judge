@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mq:
+    image: rabbitmq:3-management
+    hostname: judge-rabbitmq
+    container_name: judge_mq
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=rabbitmq
+    ports:
+    - "5672:5672"
+    - "15672:15672"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

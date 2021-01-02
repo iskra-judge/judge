@@ -2,8 +2,8 @@ from django import forms
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 
-from judge.web.models import Submission, CodeTask
-from judge.submissions_queue.tasks import do
+from judge.submissions.models import Submission
+from judge.code_tasks.models import CodeTask
 
 
 class SubmissionForm(forms.Form):
@@ -40,6 +40,4 @@ class SubmissionView(TemplateView):
         )
 
         s.save()
-        do.delay()
-
         return redirect('create submission', task_id)

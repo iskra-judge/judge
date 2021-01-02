@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from judge.web.models import CodeSubmissionType, CodeTask, TaskTest, Submission, SubmissionTestResultType, \
-    SubmissionTestResult, SubmissionResult
+from judge.code_tasks.models import CodeSubmissionType, CodeTask, TaskTest
+from judge.submissions.models import Submission, SubmissionTestResultType, SubmissionTestResult, SubmissionResult
 
 
 class TaskTestInlineAdmin(admin.StackedInline):

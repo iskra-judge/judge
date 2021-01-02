@@ -1,6 +1,6 @@
 import uuid
 
-from judge.submissions_queue.code_executors.base.docker_executor import DockerExecutor
+from judge.submissions.code_executors.base.docker_executor import DockerExecutor
 
 
 class PythonDockerExecutor(DockerExecutor):

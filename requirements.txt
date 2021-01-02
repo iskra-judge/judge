@@ -9,13 +9,16 @@ click-didyoumean==0.0.3
 click-plugins==1.1.1
 click-repl==0.1.6
 Django==3.1.4
+django-celery-beat==2.1.0
 django-celery-results==2.0.0
+django-timezone-field==4.1.1
 docker==4.4.1
 idna==2.10
 kombu==5.0.2
 prompt-toolkit==3.0.8
+python-crontab==2.5.1
+python-dateutil==2.8.1
 pytz==2020.5
-# pywin32==227
 PyYAML==5.3.1
 redis==3.5.3
 requests==2.25.1

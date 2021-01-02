@@ -1,3 +1,3 @@
-import judge.submissions_queue.submissions_docker
+import judge.submissions.submissions_docker
 
-judge.submissions_queue.submissions_docker.solve()
+judge.submissions.submissions_docker.solve()

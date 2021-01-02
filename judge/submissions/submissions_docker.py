@@ -1,7 +1,7 @@
-from judge.submissions_queue.code_executors.cpp_docker_executor import CppDockerExecutor
-from judge.submissions_queue.code_executors.java_docker_executor import JavaDockerExecutor
-from judge.submissions_queue.common.submissions_common import get_tests
-from judge.submissions_queue.code_executors.python_docker_executor import PythonDockerExecutor
+from judge.submissions.code_executors.cpp_docker_executor import CppDockerExecutor
+from judge.submissions.code_executors.java_docker_executor import JavaDockerExecutor
+from judge.submissions.common.submissions_common import get_tests
+from judge.submissions.code_executors.python_docker_executor import PythonDockerExecutor
 
 
 def solve():

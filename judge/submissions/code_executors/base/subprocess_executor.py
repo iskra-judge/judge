@@ -1,8 +1,8 @@
 import io
 import subprocess
 
-from judge.submissions_queue.code_executors.base.base_executor import BaseExecutor
-from judge.submissions_queue.common.test_results import TestResult, TestResultType
+from judge.submissions.code_executors.base.base_executor import BaseExecutor
+from judge.submissions.common.test_results import TestResult, TestResultType
 
 
 class SubprocessExecutor(BaseExecutor):

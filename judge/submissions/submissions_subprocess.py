@@ -1,5 +1,5 @@
-from judge.submissions_queue.code_executors.base.subprocess_executor import SubprocessExecutor
-from judge.submissions_queue.common.submissions_common import get_tests
+from judge.submissions.code_executors.base.subprocess_executor import SubprocessExecutor
+from judge.submissions.common.submissions_common import get_tests
 
 
 def solve():

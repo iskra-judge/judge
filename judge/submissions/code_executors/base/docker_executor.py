@@ -8,8 +8,8 @@ from os.path import basename, join, dirname
 import docker
 import shutil
 
-from judge.submissions_queue.code_executors.base.base_executor import BaseExecutor
-from judge.submissions_queue.common.test_results import TestResult, TestResultType
+from judge.submissions.code_executors.base.base_executor import BaseExecutor
+from judge.submissions.common.test_results import TestResult, TestResultType
 
 
 def copy_to_container(container, source, destination):

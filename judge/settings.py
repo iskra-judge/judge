@@ -29,9 +29,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'judge',
+    'celery',
+    'django_celery_results',
+    'django_celery_beat',
+
+    'judge.code_tasks',
+    'judge.submissions',
     'judge.web',
-    'judge.submissions_queue',
+    'judge',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,9 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    'celery',
-    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -130,3 +132,4 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_TIMEZONE = 'Europe/Sofia'

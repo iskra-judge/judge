@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="linux" type="CompoundRunConfigurationType">
+    <toRun name="celery-linux" type="PythonConfigurationType" />
+    <toRun name="judge-linux" type="Python.DjangoServer" />
+    <method v="2" />
+  </configuration>
+</component>

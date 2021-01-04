@@ -1,0 +1,16 @@
+<div class="code_task_item row">
+    <div class="col-sm-6"><a href="{% url 'code task details' code_task.id %}">{{ code_task.name }}</a></div>
+    <div class="col-sm-2">
+        <a href="{% url 'index' %}?difficulties={{ code_task.difficulty_id }}">
+            {{ code_task.difficulty.name }}
+        </a>
+    </div>
+    <div class="col-sm-2">
+        {% for category in code_task.categories.all %}
+            <a href="{% url 'index' %}?categories={{ category.id }}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+    <div class="col-sm-2 text-center">
+        {{ code_task.submission_set.count }}
+    </div>
+</div>

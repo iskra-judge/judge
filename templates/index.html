@@ -1,0 +1,43 @@
+{% extends 'core/two_columns.html' %}
+{% load static %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'css/code_tasks.css' %}">
+{% endblock %}
+
+{% block left_column %}
+    {% include 'partials/code_tasks/tasks_list.html' %}
+{% endblock %}
+{% block right_column %}
+    <form action="{% url 'index' %}" method="get">
+        <h2>Categories</h2>
+        {% for category in filter_form.categories %}
+            <label class="form-control col">
+                {% if category.data.selected %}
+                    <input checked="checked" value="{{ category.data.value }}" type="checkbox"
+                           name="{{ category.data.name }}">
+                {% else %}
+                    <input value="{{ category.data.value }}" type="checkbox"
+                           name="{{ category.data.name }}">
+                {% endif %}
+                <span>{{ category.choice_label }}</span>
+            </label>
+        {% endfor %}
+
+        <h2>Difficulties</h2>
+        {% for difficulty in filter_form.difficulties %}
+            <label class="form-control col">
+                {% if difficulty.data.selected %}
+                    <input checked="checked" value="{{ difficulty.data.value }}" type="checkbox"
+                           name="{{ difficulty.data.name }}">
+                {% else %}
+                    <input value="{{ difficulty.data.value }}" type="checkbox"
+                           name="{{ difficulty.data.name }}">
+                {% endif %}
+                <span>{{ difficulty.choice_label }}</span>
+            </label>
+        {% endfor %}
+        <button class="btn btn-primary">Filter</button>
+        <a class="btn btn-primary" href="{% url 'index' %}">Clear filters</a>
+    </form>
+{% endblock %}

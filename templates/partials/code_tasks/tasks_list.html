@@ -1,0 +1,16 @@
+<h2>Tasks</h2>
+<ul class="list list-stripped">
+    <li class="list-item">
+        <div class="code_task_item code_task_item_header row">
+            <div class="col-sm-6  text-center">Name</div>
+            <div class="col-sm-2  text-center">Difficulty</div>
+            <div class="col-sm-2  text-center">Categories</div>
+            <div class="col-sm-2  text-center">Submissions</div>
+        </div>
+    </li>
+    {% for code_task in code_tasks %}
+        <li class="list-item">
+            {% include 'core/code_task.html' with code_task=code_task %}
+        </li>
+    {% endfor %}
+</ul>

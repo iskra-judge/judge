@@ -1,43 +1,73 @@
-from django import forms
-from django.shortcuts import render, redirect
-from django.views.generic import TemplateView
+from django.contrib.auth import get_user_model
+from django.db.models import Max
+from django.views import generic as views
 
-from judge.submissions.models import Submission
-from judge.code_tasks.models import CodeTask
+from judge.code_tasks.forms import CodeTaskFilterForm
+from judge.code_tasks.models import CodeTask, CodeTaskCategory, Difficulty
 
-
-class SubmissionForm(forms.Form):
-    task_id = forms.CharField(widget=forms.HiddenInput())
-    code = forms.CharField(widget=forms.Textarea())
-    submission_type_id = forms.IntegerField()
+UserModel = get_user_model()
 
 
-class SubmissionView(TemplateView):
-    template_name = 'submissions/create.html'
+class IndexView(views.ListView):
+    template_name = 'index.html'
+    context_object_name = 'code_tasks'
+    selected_categories_ids = []
+    selected_difficulties_ids = []
+
+    def dispatch(self, request, *args, **kwargs):
+        self.selected_categories_ids = self.request.GET.getlist('categories', [])
+        self.selected_difficulties_ids = self.request.GET.getlist('difficulties', [])
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        form = kwargs.pop('form', None)
         context = super().get_context_data(**kwargs)
 
-        code_task = CodeTask.objects.filter(pk=self.kwargs['task_pk']).first()
-        context['form'] = form or SubmissionForm(initial={'task_id': code_task.id})
-        context['submission_types'] = code_task.code_submission_types.all()
-        return context
-
-    def post(self, request, task_pk):
-        form = SubmissionForm(request.POST)
-        if not form.is_valid():
-            return render(self.template_name, self.get_context_data(form=form))
-
-        data = form.cleaned_data
-        task_id = data.pop('task_id')
-        code = data.pop('code')
-        submisstion_type_id = data.pop('submission_type_id')
-        s = Submission(
-            code_task_id=task_id,
-            code=code,
-            type_id=submisstion_type_id
+        context['filter_form'] = CodeTaskFilterForm(
+            categories=CodeTaskCategory.objects.all(),
+            difficulties=Difficulty.objects.all(),
+            initial={
+                'categories': self.selected_categories_ids,
+                'difficulties': self.selected_difficulties_ids,
+            }
         )
 
-        s.save()
-        return redirect('create submission', task_id)
+        return context
+
+    def get_queryset(self):
+        filter_obj = {}
+
+        if self.selected_categories_ids:
+            filter_obj['categories__id__in'] = self.selected_categories_ids
+        if self.selected_difficulties_ids:
+            filter_obj['difficulty_id__in'] = self.selected_difficulties_ids
+
+        if self.selected_difficulties_ids or self.selected_categories_ids:
+            queryset = CodeTask.objects.filter(**filter_obj)
+        else:
+            queryset = CodeTask.objects.all()
+        return queryset.order_by('-date_created')
+
+
+class UserRankingsView(views.ListView):
+    model = UserModel
+    template_name = 'submissions/user_rankings.html'
+    context_object_name = 'users'
+
+    def get_queryset(self):
+        users = UserModel.objects.prefetch_related('submission_set', 'submission_set__submissionresult_set')
+        for user in users:
+            submissions = user.submission_set.all()
+            if submissions:
+                user.submission_results = [self.__get_best_result(submission) for submission in submissions]
+                user.total_score = sum(result['total_score__max'] for result in user.submission_results)
+                user.problems_count = len(set(submission.code_task_id for submission in submissions))
+                user.submissions_count = len(submissions)
+            else:
+                user.total_score = 0
+                user.problems_count = 0
+                user.submissions_count = 0
+
+        return sorted(users, key=lambda x: x.total_score, reverse=True)
+
+    def __get_best_result(self, submission):
+        return submission.submissionresult_set.all().aggregate(Max('total_score'))

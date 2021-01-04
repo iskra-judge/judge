@@ -1,0 +1,17 @@
+.code_task_item {
+    padding: 5px 15px;
+}
+
+.code_task_item .name {
+    font-size: 1.4em;
+    margin: 0;
+}
+
+.code_task_item .name a {
+    font-size: 0.8em;
+}
+
+.code_task_item .description {
+    margin-top: 5px;
+    text-align: justify;
+}

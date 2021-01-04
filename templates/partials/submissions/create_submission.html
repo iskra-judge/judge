@@ -1,0 +1,12 @@
+<form action="{% url 'submit submission' task_pk %}" method="post">
+    {% csrf_token %}
+    {{ form.code }}
+    {{ form.task_id }}
+    {% for submission_type in submission_types %}
+        <label>
+            {{ submission_type.name }}
+            <input type="radio" name="submission_type_id" value="{{ submission_type.id }}">
+        </label>
+    {% endfor %}
+    <button>Submit</button>
+</form>

@@ -1,0 +1,22 @@
+{% extends 'core/two_columns.html' %}
+
+{% block left_column %}
+    <ul class="list list-stripped">
+        <li class="list-item">
+            <div class="row">
+                <div class="col-sm-2 text-center">Rank</div>
+                <div class="col-sm-6 text-center">Username</div>
+                <div class="col-sm-2 text-center">Score</div>
+                <div class="col-sm-2 text-center">Problems</div>
+            </div>
+        </li>
+        {% for user in users %}
+            <li class="list-item row">
+                <div class="col-sm-2 text-center">{{ forloop.counter }}</div>
+                <div class="col-sm-6">{{ user.username }}</div>
+                <div class="col-sm-2 text-center">{{ user.total_score }}</div>
+                <div class="col-sm-2 text-center">{{ user.problems_count }}</div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-8">
+            {% block left_column %}{% endblock %}
+        </div>
+        <div class="col-sm-4">
+            {% block right_column %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

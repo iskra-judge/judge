@@ -1,7 +1,5 @@
 import shutil
 import tarfile
-import tempfile
-import uuid
 from abc import abstractmethod
 from os import chdir, remove
 from os.path import basename, join, dirname
@@ -10,6 +8,7 @@ import docker
 
 from judge.submissions.code_executors.base.base_executor import BaseExecutor
 from judge.submissions.models import SubmissionTestResult, SubmissionTestResultType
+from judge.submissions.services.temp_io import TempIoService
 
 
 def copy_to_container(container, source, destination):
@@ -42,6 +41,7 @@ class DockerExecutor(BaseExecutor):
     def __init__(self):
         self.client = None
         self.container = None
+        self.temp_io_service = TempIoService()
 
     def before_execute(self, code_path, *args, **kwargs):
         self.__init_container()
@@ -56,9 +56,9 @@ class DockerExecutor(BaseExecutor):
         self.container.remove()
 
     def get_run_file_content(self, test_input, *args, **kwargs):
-        return f'''
-import subprocess, threading
-class Command:
+        return f'''import subprocess, threading
+
+class Command(object):
     def __init__(self):
         self.process = None
     def run(self, timeout):
@@ -78,7 +78,8 @@ class Command:
                 pass
             
             if self.process.returncode:
-                raise RuntimeError(stdout.strip())
+                exception_message = stdout.strip() if stdout else "Unknown error"
+                raise RuntimeError(exception_message)
             print(stdout.strip())
 
         thread = threading.Thread(target=target)
@@ -87,13 +88,14 @@ class Command:
         if thread.is_alive():
             self.process.terminate()
             thread.join()
-            raise RuntimeError('{self.TIME_LIMIT_ERROR_MESSAGE}')
+            raise RuntimeError("{self.TIME_LIMIT_ERROR_MESSAGE}")
 Command().run(10000)
 '''
 
     def prepare_run_file(self, test_input, *args, **kwargs):
         content = self.get_run_file_content(test_input, *args, **kwargs)
-        file_path = join(tempfile.gettempdir(), f'run-{uuid.uuid4()}.py')
+        file_path = self.temp_io_service.get_temp_file()
+
         with open(file_path, 'w') as file:
             file.write(content)
         copy_to_container(self.container, file_path, self.run_file_path)
@@ -123,46 +125,26 @@ Command().run(10000)
             return None
 
     def build_test_result(self, execution_result, expected_output, test_id):
+        actual_output = execution_result.output.decode().strip() \
+            if execution_result \
+            else 'No output'
+
         if not execution_result:
             return SubmissionTestResult(
                 expected_output=expected_output,
-                actual_output='No output',
+                actual_output=actual_output,
                 task_test_id=test_id,
-                test_result_type_id=SubmissionTestResultType.execution_error().id
+                test_result_type_id=SubmissionTestResultType.execution_error().id,
             )
-        actual_output = execution_result.output.decode().strip()
-        is_runtime_error = execution_result.exit_code != 0
-        is_correct_answer = actual_output == expected_output
 
-        if is_runtime_error:
-            if actual_output == self.TIME_LIMIT_ERROR_MESSAGE:
-                return SubmissionTestResult(
-                    expected_output=expected_output,
-                    actual_output=actual_output,
-                    task_test_id=test_id,
-                    test_result_type_id=SubmissionTestResultType.time_limit_error().id,
-                )
-            else:
-                return SubmissionTestResult(
-                    expected_output=expected_output,
-                    actual_output=actual_output,
-                    task_test_id=test_id,
-                    test_result_type_id=SubmissionTestResultType.execution_error().id,
-                )
-        elif is_correct_answer:
-            return SubmissionTestResult(
-                expected_output=expected_output,
-                actual_output=actual_output,
-                task_test_id=test_id,
-                test_result_type_id=SubmissionTestResultType.correct_answer().id,
-            )
-        else:
-            return SubmissionTestResult(
-                expected_output=expected_output,
-                actual_output=actual_output,
-                task_test_id=test_id,
-                test_result_type_id=SubmissionTestResultType.wrong_answer().id,
-            )
+        test_result_type = self.__resolve_test_result_type(execution_result, expected_output, actual_output)
+
+        return SubmissionTestResult(
+            expected_output=expected_output,
+            actual_output=actual_output,
+            task_test_id=test_id,
+            test_result_type_id=test_result_type.id,
+        )
 
     def get_run_command(self, *args, **kwargs):
         return f'python {self.run_file_path}'
@@ -184,3 +166,17 @@ Command().run(10000)
             image=self.image_name,
             command=f'sh -c "tail -f /dev/null"',
         )
+
+    def __resolve_test_result_type(self, execution_result, expected_output, actual_output):
+        is_runtime_error = execution_result.exit_code != 0
+        is_correct_answer = actual_output == expected_output
+
+        if is_runtime_error:
+            if actual_output == self.TIME_LIMIT_ERROR_MESSAGE:
+                return SubmissionTestResultType.time_limit_error()
+            else:
+                return SubmissionTestResultType.execution_error()
+        elif is_correct_answer:
+            return SubmissionTestResultType.correct_answer()
+        else:
+            return SubmissionTestResultType.wrong_answer()

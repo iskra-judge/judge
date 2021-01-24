@@ -37,6 +37,7 @@ class DockerExecutor(BaseExecutor):
     image_name = None
     run_file_path = '/tmp/run.py'
     TIME_LIMIT_ERROR_MESSAGE = 'TIME LIMIT EXCEEDED'
+    MEMORY_LIMIT_ERROR_MESSAGE = 'MEMORY LIMIT EXCEEDED'
 
     def __init__(self):
         self.client = None
@@ -55,8 +56,10 @@ class DockerExecutor(BaseExecutor):
         self.container.wait()
         self.container.remove()
 
-    def get_run_file_content(self, test_input, time_limit, *args, **kwargs):
-        return f'''import subprocess, threading
+    def get_run_file_content(self, test_input, time_limit, memory_limit, *args, **kwargs):
+        return f'''import subprocess, threading, resource
+soft, hard = 33554432, 33554432
+resource.setrlimit(resource.RLIMIT_AS,(soft, hard))
 
 class Command(object):
     def __init__(self):
@@ -89,7 +92,10 @@ class Command(object):
             self.process.terminate()
             thread.join()
             raise RuntimeError("{self.TIME_LIMIT_ERROR_MESSAGE}")
-Command().run({time_limit/1000})
+try:
+    Command().run({time_limit / 1000})
+except MemoryError:
+    raise RuntimeError("{self.MEMORY_LIMIT_ERROR_MESSAGE}")
 '''
 
     def prepare_run_file(self, test_input, *args, **kwargs):
@@ -137,7 +143,8 @@ Command().run({time_limit/1000})
                 test_result_type_id=SubmissionTestResultType.execution_error().id,
             )
 
-        (test_result_type, actual_output) = self.__resolve_test_result_type(execution_result, expected_output, actual_output)
+        (test_result_type, actual_output) = self.__resolve_test_result_type(execution_result, expected_output,
+                                                                            actual_output)
 
         return SubmissionTestResult(
             expected_output=expected_output,
@@ -174,6 +181,8 @@ Command().run({time_limit/1000})
         if is_runtime_error:
             if self.TIME_LIMIT_ERROR_MESSAGE in actual_output:
                 return (SubmissionTestResultType.time_limit_error(), '')
+            elif self.MEMORY_LIMIT_ERROR_MESSAGE in actual_output:
+                return (SubmissionTestResultType.memory_limit_error(), '')
             else:
                 return (SubmissionTestResultType.execution_error(), actual_output)
         elif is_correct_answer:

@@ -1,0 +1,37 @@
+{% extends 'core/two_columns.html' %}
+
+{% block left_column %}
+    <h2>
+        <label for="code-text-area">Your code in {{ submission.type }}</label>
+    </h2>
+    <pre><code>{{ submission.code }}</code></pre>
+{% endblock %}
+{% block right_column %}
+    <h2>Total score: <strong>{{ submission.best_submission_result.total_score }}</strong></h2>
+    <ul class="list list-stripped">
+        <li class="list-item">
+            <div class="row">
+                <div class="col-sm-2 text-center">Test</div>
+                <div class="col-sm-5 text-center">Result</div>
+                <div class="col-sm-3 text-center">Memory</div>
+                <div class="col-sm-2 text-center">Time</div>
+            </div>
+        </li>
+        {% for test_result in submission.best_submission_result.submissiontestresult_set.all %}
+            <li class="list-item row">
+                <div class="col-sm-2 text-center">{{ forloop.counter }}</div>
+                <div class="col-sm-5 text-center">{{ test_result.test_result_type }}</div>
+                <div class="col-sm-3 text-center">{{ test_result.execution_memory }}</div>
+                <div class="col-sm-2 text-center">{{ test_result.execution_time }}</div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/a11y-light.min.css" integrity="sha512-PW96n2amVglidqEDLPUdjJ0zByhT20poSqWJYZRutR6CP2QH58k96WmorqNnC4QXnosNeqMJM8FR/93isIifDQ==" crossorigin="anonymous" />
+{% endblock %}
+{% block scripts_body_end %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js" integrity="sha512-9GIHU4rPKUMvNOHFOer5Zm2zHnZOjayOO3lZpokhhCtgt8FNlNiW/bb7kl0R5ZXfCDVPcQ8S4oBdNs92p5Nm2w==" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+{% endblock %}

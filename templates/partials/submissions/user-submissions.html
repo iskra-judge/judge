@@ -4,17 +4,21 @@
         <div class=" row">
             <div class="col-sm-3 text-center">Language</div>
             <div class="col-sm-3 text-center">State</div>
-            <div class="col-sm-3 text-center">Score</div>
-            <div class="col-sm-3 text-center">When</div>
+            <div class="col-sm-2 text-center">Score</div>
+            <div class="col-sm-4 text-center">When</div>
         </div>
     </li>
     {% for submission in user_submissions %}
         <li class="list-item">
             <div class=" row">
                 <div class="col-sm-3 text-center">{{ submission.type }}</div>
-                <div class="col-sm-3 text-center">{{ submission.processing_state|lower|capfirst }}</div>
-                <div class="col-sm-3 text-center">{{ submission.total_score }}</div>
-                <div class="col-sm-3 text-center">{% time_ago submission.date_created %}</div>
+                <div class="col-sm-3 text-center">
+                    <a href="{% url 'submission details' submission.id %}">
+                        {{ submission.processing_state|lower|capfirst }}
+                    </a>
+                </div>
+                <div class="col-sm-2 text-center">{{ submission.total_score }}</div>
+                <div class="col-sm-4 text-center">{% time_ago submission.date_created %}</div>
             </div>
         </li>
     {% endfor %}

@@ -11,8 +11,7 @@
     <p>{{ object.description_html|safe }}</p>
     <form class="ajax-form" action="{% url 'submit submission' %}" method="post">
         <input type="hidden" name="task_id" value="{{ object.id }}"/>
-        <textarea class="form-control" rows="10" name="code">
-        </textarea>
+        <textarea class="form-control" rows="10" name="code"></textarea>
         <div class="row">
             {% for submission_type in submission_types %}
                 <label class="form-control col">

@@ -1,11 +1,11 @@
 from django.urls import path
 
-from .api_views import CreateSubmissionApiView, UserSubmissionsApiView
-
+from . import api_views, views
 
 from .signals import *
 
 urlpatterns = (
-    path('submit/', CreateSubmissionApiView.as_view(), name='submit submission'),
-    path('user/', UserSubmissionsApiView.as_view(), name='user submissions'),
+    path('submit/', api_views.CreateSubmissionApiView.as_view(), name='submit submission'),
+    path('user/', api_views.UserSubmissionsApiView.as_view(), name='user submissions'),
+    path('details/<int:pk>', views.SubmissionDetailsView.as_view(), name='submission details')
 )

@@ -46,7 +46,7 @@ class CodeTask(audit_models.AuditModel):
 
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        self.description_html = markdown.markdown(self.description_md)
+        self.description_html = markdown.markdown(self.description_md, extensions=['fenced_code'])
         return super().save(force_insert=force_insert, force_update=force_update, using=using,
                             update_fields=update_fields)
 

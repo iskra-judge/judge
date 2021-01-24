@@ -40,13 +40,11 @@ class DockerExecutor(BaseExecutor):
     TIME_LIMIT_ERROR_MESSAGE = 'TIME LIMIT EXCEEDED'
 
     def __init__(self):
-        self.client = docker.from_env()
-        self.container = self.client.containers.create(
-            image=self.image_name,
-            command=f'sh -c "tail -f /dev/null"',
-        )
+        self.client = None
+        self.container = None
 
     def before_execute(self, code_path, *args, **kwargs):
+        self.__init_container()
         self.preprocess_code(code_path)
         self.container.start()
         copy_to_container(self.container, code_path, self.code_file_path)
@@ -179,3 +177,10 @@ Command().run(10000)
 
     def preprocess_code(self, code_path):
         pass
+
+    def __init_container(self):
+        self.client = docker.from_env()
+        self.container = self.client.containers.create(
+            image=self.image_name,
+            command=f'sh -c "tail -f /dev/null"',
+        )

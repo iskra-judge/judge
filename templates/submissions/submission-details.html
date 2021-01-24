@@ -11,7 +11,7 @@
     <ul class="list list-stripped">
         <li class="list-item">
             <div class="row">
-                <div class="col-sm-2 text-center">Test</div>
+                <div class="col-sm-2 text-center">Type</div>
                 <div class="col-sm-5 text-center">Result</div>
                 <div class="col-sm-3 text-center">Memory</div>
                 <div class="col-sm-2 text-center">Time</div>
@@ -19,7 +19,13 @@
         </li>
         {% for test_result in submission.best_submission_result.submissiontestresult_set.all %}
             <li class="list-item row">
-                <div class="col-sm-2 text-center">{{ forloop.counter }}</div>
+                <div class="col-sm-2 text-center">
+                    {% if test_result.is_zero_test %}
+                        Zero
+                    {% else %}
+                        Real
+                    {% endif %}
+                </div>
                 <div class="col-sm-5 text-center">{{ test_result.test_result_type }}</div>
                 <div class="col-sm-3 text-center">{{ test_result.execution_memory }}</div>
                 <div class="col-sm-2 text-center">{{ test_result.execution_time }}</div>

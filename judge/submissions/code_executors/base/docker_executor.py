@@ -73,7 +73,7 @@ class Command(object):
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                 )
-        
+
             stdout = self.process.communicate(input="""{test_input}""".encode())[0]
             try:
                 stdout = stdout.decode()
@@ -176,7 +176,7 @@ except MemoryError:
 
     def __resolve_test_result_type(self, execution_result, expected_output, actual_output):
         is_runtime_error = execution_result.exit_code != 0
-        is_correct_answer = actual_output == expected_output
+        is_correct_answer = self.compare_outputs(actual_output, expected_output)
 
         if is_runtime_error:
             if self.TIME_LIMIT_ERROR_MESSAGE in actual_output:

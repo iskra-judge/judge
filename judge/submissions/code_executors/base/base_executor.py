@@ -53,3 +53,14 @@ class BaseExecutor(ABC):
         with open(fixed_code_path, 'w') as fixed_code_file:
             fixed_code_file.write(contents)
         return fixed_code_path
+
+    def compare_outputs(self, actual_output, expected_output):
+        actual_output_lines = actual_output.splitlines()
+        expected_output_lines = expected_output.splitlines()
+        if len(actual_output_lines) != len(expected_output_lines):
+            return False
+        for i in range(len(actual_output_lines)):
+            if actual_output_lines[i] != expected_output_lines[i]:
+                return False
+
+        return True

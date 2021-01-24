@@ -44,7 +44,6 @@ class CodeTask(audit_models.AuditModel):
     time_limit_in_ms = models.IntegerField(default=100)
     memory_limit_in_bytes = models.IntegerField(default=16)
 
-
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.description_html = markdown.markdown(self.description_md, extensions=['fenced_code'])
         return super().save(force_insert=force_insert, force_update=force_update, using=using,
@@ -57,4 +56,5 @@ class CodeTask(audit_models.AuditModel):
 class TaskTest(audit_models.AuditModel):
     input = models.TextField()
     expected_output = models.TextField()
+    is_zero_test = models.BooleanField(default=False)
     code_task = models.ForeignKey(CodeTask, on_delete=models.CASCADE)

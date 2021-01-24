@@ -22,7 +22,9 @@ class BaseExecutor(ABC):
             for test in tests:
                 self.before_test_execute(fixed_code_path, test)
                 execution_result = self.execute_test(fixed_code_path, test['in'], time_limit, memory_limit)
-                test_results.append(self.build_test_result(execution_result, test['out'], test['id']))
+                test_result = self.build_test_result(execution_result, test['out'], test['id'])
+                test_result.is_zero_test = test['is_zero_test']
+                test_results.append(test_result)
         except:
             pass
 

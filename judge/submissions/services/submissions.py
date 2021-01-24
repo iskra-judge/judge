@@ -15,13 +15,14 @@ class SubmissionsService:
     def __calculate_total_score(self, test_results):
         max_points = 100
         correct_answer_type_id = SubmissionTestResultType.correct_answer().id
+        non_zero_tests = [test_result for test_result in test_results if not test_result.is_zero_test]
         correct_tests = len(
             [
                 test_result
-                for test_result in test_results
+                for test_result in non_zero_tests
                 if test_result.test_result_type_id == correct_answer_type_id
             ])
-        total_tests = len(test_results)
+        total_tests = len(non_zero_tests)
         return int(correct_tests * max_points / total_tests)
 
     def __get_executor(self, submission_type):
@@ -39,6 +40,7 @@ class SubmissionsService:
                 'in': test.input,
                 'out': test.expected_output,
                 'id': test.id,
+                'is_zero_test': test.is_zero_test,
             }
             for test in submission.code_task.tasktest_set.all()
         ]

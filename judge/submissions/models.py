@@ -109,6 +109,7 @@ class SubmissionTestResult(audit_models.AuditModel):
     actual_output = models.TextField()
     execution_time = models.FloatField(null=True, blank=True)
     execution_memory = models.FloatField(null=True, blank=True)
+    is_zero_test = models.BooleanField(default=False)
     task_test = models.ForeignKey(TaskTest, on_delete=models.CASCADE)
     test_result_type = models.ForeignKey(SubmissionTestResultType, on_delete=models.CASCADE)
     submission_result = models.ForeignKey(SubmissionResult, on_delete=models.CASCADE)

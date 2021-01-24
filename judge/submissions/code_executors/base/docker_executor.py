@@ -55,7 +55,7 @@ class DockerExecutor(BaseExecutor):
         self.container.wait()
         self.container.remove()
 
-    def get_run_file_content(self, test_input, *args, **kwargs):
+    def get_run_file_content(self, test_input, time_limit, *args, **kwargs):
         return f'''import subprocess, threading
 
 class Command(object):
@@ -89,7 +89,7 @@ class Command(object):
             self.process.terminate()
             thread.join()
             raise RuntimeError("{self.TIME_LIMIT_ERROR_MESSAGE}")
-Command().run(10000)
+Command().run({time_limit/1000})
 '''
 
     def prepare_run_file(self, test_input, *args, **kwargs):
@@ -137,7 +137,7 @@ Command().run(10000)
                 test_result_type_id=SubmissionTestResultType.execution_error().id,
             )
 
-        test_result_type = self.__resolve_test_result_type(execution_result, expected_output, actual_output)
+        (test_result_type, actual_output) = self.__resolve_test_result_type(execution_result, expected_output, actual_output)
 
         return SubmissionTestResult(
             expected_output=expected_output,
@@ -172,11 +172,11 @@ Command().run(10000)
         is_correct_answer = actual_output == expected_output
 
         if is_runtime_error:
-            if actual_output == self.TIME_LIMIT_ERROR_MESSAGE:
-                return SubmissionTestResultType.time_limit_error()
+            if self.TIME_LIMIT_ERROR_MESSAGE in actual_output:
+                return (SubmissionTestResultType.time_limit_error(), '')
             else:
-                return SubmissionTestResultType.execution_error()
+                return (SubmissionTestResultType.execution_error(), actual_output)
         elif is_correct_answer:
-            return SubmissionTestResultType.correct_answer()
+            return (SubmissionTestResultType.correct_answer(), actual_output)
         else:
-            return SubmissionTestResultType.wrong_answer()
+            return (SubmissionTestResultType.wrong_answer(), actual_output)

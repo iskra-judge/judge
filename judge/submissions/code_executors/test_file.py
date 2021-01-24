@@ -40,4 +40,5 @@ class Command(object):
             raise RuntimeError("self.TIME_LIMIT_ERROR_MESSAGE")
 
 
-Command().run(10000)
+# Command().run(10000)
+

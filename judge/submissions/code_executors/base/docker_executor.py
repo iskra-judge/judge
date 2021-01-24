@@ -38,6 +38,8 @@ class DockerExecutor(BaseExecutor):
     run_file_path = '/tmp/run.py'
     TIME_LIMIT_ERROR_MESSAGE = 'TIME LIMIT EXCEEDED'
     MEMORY_LIMIT_ERROR_MESSAGE = 'MEMORY LIMIT EXCEEDED'
+    EXECUTION_TIME_MARKER = 'E_T_M: '
+    EXECUTION_MEMORY_MARKER = 'E_M_M: '
 
     def __init__(self):
         self.client = None
@@ -58,6 +60,7 @@ class DockerExecutor(BaseExecutor):
 
     def get_run_file_content(self, test_input, time_limit, memory_limit, *args, **kwargs):
         return f'''import subprocess, threading, resource
+from _datetime import datetime
 soft, hard = 33554432, 33554432
 resource.setrlimit(resource.RLIMIT_AS,(soft, hard))
 
@@ -66,6 +69,8 @@ class Command(object):
         self.process = None
     def run(self, timeout):
         def target():
+        
+            start = datetime.now()
             self.process = subprocess.Popen(
                     {self.get_run_command_params()},
                     shell=False,
@@ -75,6 +80,7 @@ class Command(object):
                 )
 
             stdout = self.process.communicate(input="""{test_input}""".encode())[0]
+            end = datetime.now()
             try:
                 stdout = stdout.decode()
             except:
@@ -84,6 +90,8 @@ class Command(object):
                 exception_message = stdout.strip() if stdout else "Unknown error"
                 raise RuntimeError(exception_message)
             print(stdout.strip())
+            print("{self.EXECUTION_TIME_MARKER}" + str(int((end - start).total_seconds()*1000)))
+            print("{self.EXECUTION_MEMORY_MARKER}555")
 
         thread = threading.Thread(target=target)
         thread.start()
@@ -134,6 +142,7 @@ except MemoryError:
         actual_output = execution_result.output.decode().strip() \
             if execution_result \
             else 'No output'
+        (actual_output, expection_time, execution_memory) = self.__extract_output_and_execution_time(actual_output)
 
         if not execution_result:
             return SubmissionTestResult(
@@ -141,6 +150,8 @@ except MemoryError:
                 actual_output=actual_output,
                 task_test_id=test_id,
                 test_result_type_id=SubmissionTestResultType.execution_error().id,
+                execution_time=expection_time,
+                execution_memory=execution_memory,
             )
 
         (test_result_type, actual_output) = self.__resolve_test_result_type(execution_result, expected_output,
@@ -151,6 +162,8 @@ except MemoryError:
             actual_output=actual_output,
             task_test_id=test_id,
             test_result_type_id=test_result_type.id,
+            execution_time=expection_time,
+            execution_memory=execution_memory,
         )
 
     def get_run_command(self, *args, **kwargs):
@@ -189,3 +202,20 @@ except MemoryError:
             return (SubmissionTestResultType.correct_answer(), actual_output)
         else:
             return (SubmissionTestResultType.wrong_answer(), actual_output)
+
+    def __extract_output_and_execution_time(self, output):
+        if self.EXECUTION_TIME_MARKER not in output \
+                or self.EXECUTION_MEMORY_MARKER not in output:
+            return (output, None, None)
+        lines = output.splitlines()
+        output_lines = []
+        execution_time = None
+        execution_memory = None
+        for line in lines:
+            if self.EXECUTION_TIME_MARKER in line:
+                execution_time = float(line.split(self.EXECUTION_TIME_MARKER)[1])
+            elif self.EXECUTION_MEMORY_MARKER in line:
+                execution_memory = float(line.split(self.EXECUTION_MEMORY_MARKER)[1])
+            else:
+                output_lines.append(line)
+        return ('\n'.join(output_lines), execution_time, execution_memory)

@@ -77,7 +77,7 @@ class SubmissionsService:
 
             self.__save_submission_result(submission, test_results, is_retest)
         except Exception as err:
-            pass
+            print(err)
 
         self.__update_processing_state(submission, Submission.PROCESSING_STATE_JUDGED)
 

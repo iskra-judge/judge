@@ -20,10 +20,10 @@ class SubmissionResultInlineAdmin(admin.StackedInline):
 class SubmissionAdmin(admin.ModelAdmin):
     inlines = (SubmissionResultInlineAdmin,)
     change_form_template = 'admin/submission_change_form.html'
-    list_display = ('id', 'processing_state', 'user', 'submission_type', 'total_score')
+    list_display = ('id', 'processing_state', 'user', 'submission_type', 'total_score', 'code_task')
     actions = ('rejudge',)
 
-    list_filter = ('user',)
+    list_filter = ('user', 'code_task')
 
     def __rejudge(self, submissions):
         for submission in submissions:
@@ -46,6 +46,9 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     def total_score(self, obj):
         return obj.submissionresult_set.aggregate(Max('total_score'))['total_score__max']
+
+    def code_task(self, obj):
+        return obj.code_task
 
 
 class SubmissionTestResultInlineAdmin(admin.StackedInline):

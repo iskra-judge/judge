@@ -19,8 +19,11 @@ class CodeTaskDetailsView(auth_mixins.LoginRequiredMixin, views.DetailView):
                                 .prefetch_related('submissionresult_set'))
 
         for submission in user_submissions:
-            best_result = submission.submissionresult_set.order_by('-total_score').first()
-            submission.total_score = best_result.total_score
+            try:
+                best_result = submission.submissionresult_set.order_by('-total_score').first()
+                submission.total_score = best_result.total_score
+            except:
+                submission.total_score = 0
 
         context['user_submissions'] = user_submissions
 

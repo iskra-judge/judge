@@ -2,23 +2,40 @@ version: '3.8'
 
 services:
   mq:
-    image: rabbitmq:3-management
-    hostname: judge-rabbitmq
-    container_name: judge_mq
-    environment:
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=rabbitmq
-    ports:
-    - "5672:5672"
-    - "15672:15672"
-  redis:
     image: redis
     ports:
       - "6379:6379"
-  postgres_db:
+  db:
     image: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
     ports:
     - "5432:5432"
+  web:
+    image: iskralumbeva/judge-web:latest
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - mq
+  celery:
+    image: iskralumbeva/judge-celery:latest
+    build: .
+    command: celery -A judge worker -l debug
+    volumes:
+      - .:/app
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - mq

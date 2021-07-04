@@ -1,5 +1,6 @@
 from judge.similarity.checkers.cosine_similarity_checker import CosineSimilarityChecker
 from judge.similarity.checkers.jaccard_similarity_checker import JaccardSimilarityChecker
+from judge.similarity.checkers.levenshtein_distance_checker import LevenshteinDistanceChecker
 from judge.similarity.checkers.longest_common_subsequence_similarity_checker import \
     LongestCommonSubsequenceSimilarityChecker
 from judge.submissions.models import Submission, SubmissionSimilarity
@@ -9,6 +10,7 @@ class CodeSimilarityService:
     MINIMAL_SUSPICIOUS_COSINE_RESULT = 0.6
     MINIMAL_SUSPICIOUS_JACCARD_RESULT = 0.6
     MINIMAL_SUSPICIOUS_LCS_RESULT = 0.6
+    MINIMAL_SUSPICIOUS_LEVENSHTEIN_DISTANCE_RESULT = 0.6
 
     def __init__(self):
         self.cosine_similarity_checker = CosineSimilarityChecker()

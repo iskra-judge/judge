@@ -16,7 +16,7 @@ class CreateSubmissionsSerializer(serializers.Serializer):
         code = self.validated_data['code']
         submission_type_id = self.validated_data['submission_type_id']
         user = self.context['request'].user
-
+        print(self.validated_data)
         submission = Submission(
             code_task_id=task_id,
             code=code,

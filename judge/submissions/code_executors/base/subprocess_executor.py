@@ -1,4 +1,3 @@
-import io
 import subprocess
 
 from judge.submissions.code_executors.base.base_executor import BaseExecutor

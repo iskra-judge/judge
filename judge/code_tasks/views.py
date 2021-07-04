@@ -14,6 +14,7 @@ class CodeTaskDetailsView(auth_mixins.LoginRequiredMixin, views.DetailView):
         code_task = self.get_object()
         context['submission_types'] = code_task.code_submission_types.all()
         user_submissions = list(Submission.objects \
+                                .prefetch_related('submissionresult_set') \
                                 .filter(user_id=self.request.user.id,
                                         code_task_id=code_task.id) \
                                 .prefetch_related('submissionresult_set'))
@@ -25,6 +26,6 @@ class CodeTaskDetailsView(auth_mixins.LoginRequiredMixin, views.DetailView):
             except:
                 submission.total_score = 0
 
-        context['user_submissions'] = user_submissions
+        context['user_submissions'] = sorted(user_submissions, key=lambda x: x.date_created, reverse=True)
 
         return context

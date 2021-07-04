@@ -2,6 +2,7 @@ from django.db import transaction
 
 from judge.submissions.code_executors.cpp_docker_executor import CppDockerExecutor
 from judge.submissions.code_executors.java_docker_executor import JavaDockerExecutor
+from judge.submissions.code_executors.php_docker_executor import PhpDockerExecutor
 from judge.submissions.code_executors.python_docker_executor import PythonDockerExecutor
 from judge.submissions.models import Submission, SubmissionResult
 from judge.submissions.models import SubmissionTestResultType
@@ -23,13 +24,15 @@ class SubmissionsService:
                 if test_result.test_result_type_id == correct_answer_type_id
             ])
         total_tests = len(non_zero_tests)
-        return int(correct_tests * max_points / total_tests)
+        result = int(correct_tests * max_points / total_tests)
+        return result
 
     def __get_executor(self, submission_type):
         name_to_executor = {
             'python': PythonDockerExecutor(),
             'c++': CppDockerExecutor(),
             'java': JavaDockerExecutor(),
+            'php': PhpDockerExecutor(),
         }
 
         return name_to_executor[submission_type.name.lower()]
@@ -47,10 +50,11 @@ class SubmissionsService:
 
     @transaction.atomic
     def __save_submission_result(self, submission, test_results, is_retest):
+        total_score = self.__calculate_total_score(test_results)
         submission_result = SubmissionResult(
             code_submission=submission,
             is_retest=is_retest,
-            total_score=self.__calculate_total_score(test_results),
+            total_score=total_score,
         )
         submission_result.save()
         for test_result in test_results:
@@ -74,7 +78,7 @@ class SubmissionsService:
         (time_limit, memory_limit) = self.__get_limits(submission)
         try:
             test_results = executor.execute(file_path, tests, time_limit, memory_limit)
-
+            print(test_results)
             self.__save_submission_result(submission, test_results, is_retest)
         except Exception as err:
             print(err)

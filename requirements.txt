@@ -1,7 +1,7 @@
-amqp==5.0.2
+amqp==5.0.6
 asgiref==3.3.1
-billiard==3.6.3.0
-celery==5.0.5
+billiard==3.6.4.0
+celery==5.1.0
 certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
@@ -15,10 +15,10 @@ django-timezone-field==4.1.1
 djangorestframework==3.12.2
 docker==4.4.1
 idna==2.10
-kombu==5.0.2
+kombu==5.1.0
 Markdown==3.3.3
 prompt-toolkit==3.0.8
-psycopg2==2.8.6
+psycopg2-binary==2.8.6
 python-crontab==2.5.1
 python-dateutil==2.8.1
 pytz==2020.5

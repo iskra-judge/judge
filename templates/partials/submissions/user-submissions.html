@@ -2,24 +2,46 @@
 <ul class="list list-stripped">
     <li class="list-item">
         <div class=" row">
-            <div class="col-sm-3 text-center">Language</div>
+            <div class="col-sm-3 text-center">Lang</div>
             <div class="col-sm-3 text-center">State</div>
             <div class="col-sm-2 text-center">Score</div>
             <div class="col-sm-4 text-center">When</div>
         </div>
     </li>
     {% for submission in user_submissions %}
-        <li class="list-item">
-            <div class=" row">
-                <div class="col-sm-3 text-center">{{ submission.type }}</div>
-                <div class="col-sm-3 text-center">
-                    <a href="{% url 'submission details' submission.id %}">
-                        {{ submission.processing_state|lower|capfirst }}
-                    </a>
-                </div>
-                <div class="col-sm-2 text-center">{{ submission.total_score }}</div>
-                <div class="col-sm-4 text-center">{% time_ago submission.date_created %}</div>
+    <li class="list-item">
+        <div class=" row">
+            <div class="col-sm-3 text-center">
+                {% if submission.type.name == 'c++' %}
+                    C/C++
+                {% else %}
+                {{ submission.type|capfirst }}
+                {% endif %}
             </div>
-        </li>
+            <div class="col-sm-3 text-center">
+                <a href="{% url 'submission details' submission.id %}">
+                    {% if submission.processing_state == 'NOT_STARTED' %}
+                        Enqueued
+                    {% elif submission.processing_state == 'ENQUEUE_FOR_JUDGING' %}
+                        Enqueued
+                    {% elif submission.processing_state == 'JUDGED' %}
+                        Judged
+                    {% else %}
+                        Judging
+                    {% endif %}
+                </a>
+            </div>
+            <div class="col-sm-2 text-center">{{ submission.total_score }}</div>
+            <div class="col-sm-4 text-center">{% time_ago submission.date_created %}</div>
+        </div>
+    </li>
     {% endfor %}
 </ul>
+
+<script>
+    $('.btn-refresh').on('click', function (ev) {
+        location.refresh();
+        ev.preventDefault();
+        return false;
+    });
+</script>

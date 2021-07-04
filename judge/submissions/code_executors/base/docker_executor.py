@@ -1,3 +1,4 @@
+import resource
 import shutil
 import tarfile
 from abc import abstractmethod
@@ -60,8 +61,8 @@ class DockerExecutor(BaseExecutor):
 
     def get_run_file_content(self, test_input, time_limit, memory_limit, *args, **kwargs):
         return f'''import subprocess, threading, resource
-from _datetime import datetime
-soft, hard = 33554432, 33554432
+from datetime import datetime
+soft, hard =  resource.RLIM_INFINITY, resource.RLIM_INFINITY
 resource.setrlimit(resource.RLIMIT_AS,(soft, hard))
 
 class Command(object):
@@ -69,7 +70,6 @@ class Command(object):
         self.process = None
     def run(self, timeout):
         def target():
-        
             start = datetime.now()
             self.process = subprocess.Popen(
                     {self.get_run_command_params()},

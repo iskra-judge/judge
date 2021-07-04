@@ -5,7 +5,7 @@ from judge.submissions.code_executors.base.docker_executor import DockerExecutor
 
 
 class JavaDockerExecutor(DockerExecutor):
-    image_name = 'openjdk:17-buster'
+    image_name = 'iskralumbeva/judge-java'
     class_name_regex = 'public class (.*?){'
     class_name = None
 
@@ -24,6 +24,9 @@ class JavaDockerExecutor(DockerExecutor):
     @property
     def code_file_path(self):
         return f'/tmp/{self.class_name}.java'
+
+    def get_run_command(self, *args, **kwargs):
+        return f'python3 {self.run_file_path}'
 
     @property
     def executable_file_path(self):

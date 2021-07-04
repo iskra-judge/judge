@@ -3,7 +3,7 @@ from judge.submissions.code_executors.base.docker_executor import DockerExecutor
 
 class CppDockerExecutor(DockerExecutor):
     code_file_path = f'/tmp/code_file.cpp'
-    image_name = 'gcc'
+    image_name = 'iskralumbeva/judge-cpp'
     executable_file_path = f'/tmp/executable'
 
     def get_compile_command(self):

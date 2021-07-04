@@ -5,6 +5,7 @@ register = template.Library()
 
 @register.filter
 def multiply(value, arg):
+    print(value, arg)
     return value * arg
 
 

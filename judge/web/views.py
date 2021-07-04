@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Max
+from django.db import connection
+from django.db.models import Max, Count
 from django.views import generic as views
 
 from judge.code_tasks.forms import CodeTaskFilterForm
@@ -54,19 +55,26 @@ class UserRankingsView(views.ListView):
     context_object_name = 'users'
 
     def get_queryset(self):
-        users = UserModel.objects.prefetch_related('submission_set', 'submission_set__submissionresult_set')
+        users = UserModel.objects.prefetch_related(
+            'submission_set',
+            'submission_set__submissionresult_set'
+        )
         for user in users:
-            submissions = user.submission_set.all()
+            submissions = user.submission_set.aggregate(code_task_id_c=Count('code_task_id'))
+            print([f'{s}' for s in submissions])
             if submissions:
                 user.submission_results = [self.__get_best_result(submission) for submission in submissions]
-                user.total_score = sum(result['total_score__max'] for result in user.submission_results)
-                user.problems_count = len(set(submission.code_task_id for submission in submissions))
-                user.submissions_count = len(submissions)
+                if user.submission_results:
+                    user.total_score = sum(
+                        result['total_score__max'] for result in user.submission_results if result['total_score__max'])
+                    user.problems_count = len(set(submission.code_task_id for submission in submissions))
+                    user.submissions_count = len(submissions)
             else:
                 user.total_score = 0
                 user.problems_count = 0
                 user.submissions_count = 0
 
+        print(connection.queries)
         return sorted(users, key=lambda x: x.total_score, reverse=True)
 
     def __get_best_result(self, submission):

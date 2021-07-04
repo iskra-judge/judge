@@ -14,7 +14,7 @@ $(function () {
         http.post(url, data)
             .then(json => console.log(json))
             .catch(err => console.error(err))
-            .finally(() => loading.hide());
+            .finally(() => location.reload());
 
         ev.preventDefault();
         return false;

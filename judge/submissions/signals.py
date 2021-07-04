@@ -7,9 +7,11 @@ from judge.submissions.tasks import process_submission, check_similar_submission
 
 @receiver(post_save, sender=Submission)
 def judge_submission(sender, instance, created, **kwargs):
+    print(instance.processing_state)
     if created:
         instance.processing_state = Submission.PROCESSING_STATE_ENQUEUED_FOR_JUDGING
         instance.save()
         process_submission.delay(instance.id)
     elif instance.processing_state == Submission.PROCESSING_STATE_JUDGED:
+        print('Checking similarities')
         check_similar_submissions.delay(instance.id)

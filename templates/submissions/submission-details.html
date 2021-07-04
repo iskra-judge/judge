@@ -29,7 +29,11 @@
                 </div>
                 <div class="col-sm-5 text-center">{{ test_result.test_result_type }}</div>
                 <div class="col-sm-3 text-center">{{ test_result.execution_memory }}</div>
-                <div class="col-sm-2 text-center">{{ test_result.execution_time|divide:1000 }}s</div>
+                {% if test_result_type == SubmissionTestResultType.TIME_LIMIT %}
+                    <div class="col-sm-2 text-center">TL</div>
+                {% else %}
+                    <div class="col-sm-2 text-center">{{ test_result.execution_time|divide:1000 }}s</div>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>

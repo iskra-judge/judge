@@ -1,0 +1,33 @@
+version: '3.4'
+
+services:
+  cpp_executor:
+    image: iskralumbeva/judge-cpp
+    build:
+      context: .
+      dockerfile: ./cpp/Dockerfile
+    volumes:
+      - './executors_tmp:/tmp'
+  java_executor:
+    image: iskralumbeva/judge-java
+    build:
+      context: .
+      dockerfile: ./java/Dockerfile
+    volumes:
+      - './executors_tmp:/tmp'
+  python_executor:
+    image: iskralumbeva/judge-python
+    build:
+      context: .
+      dockerfile: ./python/Dockerfile
+    volumes:
+      - './executors_tmp:/tmp'
+#  php_executor:
+#    image: iskralumbeva/judge-php
+#    build:
+#      context: .
+#      dockerfile: php/Dockerfile2
+#    volumes:
+#      - './executors_tmp:/tmp'
+#
+#

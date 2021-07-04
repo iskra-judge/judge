@@ -1,3 +1,3 @@
 from django.db import models
 
-# Create your models.py here.
+# Create your submission_test_result.py here.

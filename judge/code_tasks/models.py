@@ -36,7 +36,6 @@ class CodeTask(audit_models.AuditModel):
     name = models.CharField(max_length=30)
     description_md = models.TextField()
     description_html = models.TextField(blank=True)
-    description_preview = models.TextField(blank=True)
 
     code_submission_types = models.ManyToManyField(CodeSubmissionType)
     categories = models.ManyToManyField(CodeTaskCategory)

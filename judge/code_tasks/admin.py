@@ -10,10 +10,17 @@ class TaskTestInlineAdmin(admin.StackedInline):
 class CodeTaskAdmin(admin.ModelAdmin):
     inlines = (TaskTestInlineAdmin,)
     list_display = ('id', 'name')
+    fields = (
+        'name',
+        'description_md',
+        'description_html',
+        'code_submission_types',
+        'categories',
+        'difficulty',
+        'time_limit_in_ms',
+        'memory_limit_in_bytes',
+    )
     readonly_fields = ('description_html',)
-
-    def preview(self, obj):
-        return obj.description_html
 
 
 class CodeTaskInlineAdmin(admin.StackedInline):

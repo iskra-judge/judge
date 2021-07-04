@@ -25,8 +25,9 @@ class BaseExecutor(ABC):
                 test_result = self.build_test_result(execution_result, test['out'], test['id'])
                 test_result.is_zero_test = test['is_zero_test']
                 test_results.append(test_result)
-        except:
-            pass
+        except Exception as ex:
+            print(ex)
+            raise ex
 
         self.after_execute(fixed_code_path, tests)
         return test_results

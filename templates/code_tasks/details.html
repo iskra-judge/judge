@@ -16,7 +16,11 @@
             {% for submission_type in submission_types %}
                 <label class="form-control col">
                     <input type="radio" name="submission_type_id" value="{{ submission_type.id }}"/>
-                    <span>{{ submission_type.name }}</span>
+                    {% if submission_type.name == 'c++' %}
+                        <span>C/C++</span>
+                    {% else %}
+                        <span>{{ submission_type.name|capfirst }}</span>
+                    {% endif %}
                 </label>
             {% endfor %}
             <button class="btn btn-primary col">Submit</button>

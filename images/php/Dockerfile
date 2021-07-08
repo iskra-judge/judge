@@ -1,4 +1,6 @@
 FROM python:latest
 
-RUN yum install -y \
-    libicu-dev
+RUN apt update && apt upgrade -y
+RUN apt install -y \
+    libicu-dev \
+    php-cli

@@ -22,12 +22,12 @@ services:
       dockerfile: ./python/Dockerfile
     volumes:
       - './executors_tmp:/tmp'
-#  php_executor:
-#    image: iskralumbeva/judge-php
-#    build:
-#      context: .
-#      dockerfile: php/Dockerfile2
-#    volumes:
-#      - './executors_tmp:/tmp'
-#
-#
+  php_executor:
+    image: iskralumbeva/judge-php
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+    volumes:
+      - './executors_tmp:/tmp'
+
+

@@ -25,9 +25,6 @@ class JavaDockerExecutor(DockerExecutor):
     def code_file_path(self):
         return f'/tmp/{self.class_name}.java'
 
-    def get_run_command(self, *args, **kwargs):
-        return f'python3 {self.run_file_path}'
-
     @property
     def executable_file_path(self):
         return f'/tmp/{self.class_name}'
